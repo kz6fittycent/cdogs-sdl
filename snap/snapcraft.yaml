@@ -1,0 +1,59 @@
+name: cdogs
+adopt-info: cdogs
+summary: A classic overhead run-and-gun game
+description: |
+  C-Dogs SDL is a classic overhead run-and-gun game, supporting up to 4 players 
+  in co-op and deathmatch modes. Customize your player, choose from many 
+  weapons, and blast, slide and slash your way through over 100 user-created 
+  campaigns. Have fun!
+
+website: https://congusbongus.itch.io/cdogs-sdl
+contact: https://github.com/kz6fittycent/cdogs-sdl
+issues: https://github.com/kz6fittycent/cdogs-sdl/issues
+source-code: https://github.com/cxong/cdogs-sdl
+donation: https://www.patreon.com/kz6fittycent
+
+base: core24
+grade: stable
+confinement: strict
+compression: lzo
+platforms:
+  amd64:
+    build-on: [amd64]
+    build-for: [amd64]
+    
+apps:
+  cdogs:
+    extensions:
+      - gnome
+    command: bin/cdogs-sdl
+    plugs:
+      - network
+      - opengl
+      - audio-playback      
+      
+parts:
+  cdogs:
+    source: https://github.com/cxong/cdogs-sdl
+    source-type: git
+    plugin: nil
+    override-build: |
+      mkdir -p BUILD
+      cd BUILD
+      git clone https://github.com/cxong/cdogs-sdl.git
+      sh make.sh
+      mkdir -p $CRAFT_PART_INSTALL/bin/
+      cp -r * $CRAFT_PART_INSTALL/bin/
+    override-pull: |
+      craftctl default
+      craftctl set version="$(git describe --tags | sed 's/^v//' | cut -d "-" -f1)"
+            
+    build-packages:
+      - libprotobuf-dev
+      - cmake
+      - libsdl2-dev
+      - libsdl2-image-dev
+      - libsdl2-mixer-dev 
+      - libgtk-3-dev
+      - build-essential
+      - ninja-build
